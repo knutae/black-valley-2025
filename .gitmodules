@@ -1,0 +1,7 @@
+[submodule "ELFkickers"]
+	path = ELFkickers
+	url = git@github.com:BR903/ELFkickers.git
+	ignore = dirty
+[submodule "soulcrush"]
+	path = soulcrush
+	url = git@github.com:knutae/soulcrush.git
