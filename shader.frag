@@ -11,6 +11,13 @@ out vec3 F;
 layout (location=0) uniform vec2 SIZE;
 #endif
 
+float HALF_PI = acos(0);
+
+mat2 rotate(float degrees) {
+    float a = degrees * HALF_PI / 90;
+    return mat2(cos(a), -sin(a), sin(a), cos(a));
+}
+
 // Shader minifier does not (currently) minimize structs, so use short names.
 // Using a one-letter name for the struct itself seems to trigger a bug, so use two.
 struct ma {
@@ -72,7 +79,10 @@ float ground(vec3 p) {
 }
 
 float window(vec3 p, bool inside) {
-    float dist = origin_box(p, vec3(3.0, 3, 0.2), 0.5);
+    vec3 q = p;
+    q.xy *= rotate(-20);
+    p.z += 0.005 * sin(q.x * 75 + 2 * sin(q.y * 15));
+    float dist = origin_box(p, vec3(3.0, 3, 0.3), 0.5);
     return inside ? -dist : dist;
 }
 
