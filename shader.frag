@@ -34,8 +34,8 @@ struct tr {
 };
 
 tr tr_air = tr(1.0, 1.0, background_color, 0.01);
-tr tr_red_glass = tr(0.6, 1.5, vec3(0.8, 0.1, 0.1), 0.4);
-tr transparent_objects[2] = tr[2](tr_air, tr_red_glass);
+tr tr_colored_glass = tr(0.8, 1.1, vec3(0.8, 0.6, 0.1), 0.4);
+tr transparent_objects[2] = tr[2](tr_air, tr_colored_glass);
 
 float DRAW_DISTANCE = 500.0;
 
@@ -49,8 +49,8 @@ float horizontal_plane(vec3 p, float height) {
 }
 
 float origin_box(vec3 p, vec3 dimensions, float corner_radius) {
-    vec3 a = abs(p);
-    return length(max(abs(p) - dimensions, 0.0)) - corner_radius;
+    vec3 q = abs(p) - dimensions + corner_radius;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - corner_radius;
 }
 
 void closest_material(inout float dist, inout ma mat, float new_dist, ma new_mat) {
@@ -68,13 +68,18 @@ float repeated_boxes_xz(vec3 p, vec3 dimensions, float corner_radius, float modu
 float ground(vec3 p) {
     return min(
         horizontal_plane(p, -1),
-        repeated_boxes_xz(vec3(p.x, p.y+2, p.z), vec3(1), 0.1, 5));
+        repeated_boxes_xz(vec3(p.x, p.y+2, p.z), vec3(1.1), 0.1, 5));
+}
+
+float window(vec3 p, bool inside) {
+    float dist = origin_box(p, vec3(3.0, 3, 0.2), 0.5);
+    return inside ? -dist : dist;
 }
 
 float scene(vec3 p, out ma mat, int inside) {
     float dist = origin_sphere(p + vec3(0.0, 0.0, 3.0), 1, false);
     mat = ma(0.1, 0.9, 0, 10, 0.5, 0, vec3(0.8));
-    closest_material(dist, mat, origin_sphere(p - vec3(0.0, 2.5, 0.0), 1, inside == 1), ma(0.1, 0.9, 0, 10, 0.0, 1, vec3(0.8)));
+    closest_material(dist, mat, window(p + vec3(0,-0.5,1), inside == 1), ma(0.1, 0.9, 0, 10, 0, 1, vec3(0.8)));
     closest_material(dist, mat, ground(p), ma(0.1, 0.9, 0, 10, 0.0, 0, vec3(0.8)));
     return dist;
 }
