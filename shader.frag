@@ -81,15 +81,24 @@ float ground(vec3 p) {
 float window(vec3 p, bool inside) {
     vec3 q = p;
     q.xy *= rotate(-20);
-    p.z += 0.005 * sin(q.x * 75 + 2 * sin(q.y * 15));
-    float dist = origin_box(p, vec3(3.0, 3, 0.3), 0.5);
+    p.z += 0.005 * sin(q.x * 50 + 2 * sin(q.y * 15));
+    p.y -= 9;
+    float dist = origin_box(p, vec3(3.5, 8.5, 0.3), 0.1);
     return inside ? -dist : dist;
+}
+
+float door(vec3 p) {
+    p.y -= 9;
+    float dist = origin_box(p, vec3(5, 10, 0.4), 0.1);
+    dist = max(dist, -origin_box(p, vec3(3, 8, 1), 0.01));
+    return dist;
 }
 
 float scene(vec3 p, out ma mat, int inside) {
     float dist = origin_sphere(p + vec3(0.0, 0.0, 3.0), 1, false);
     mat = ma(0.1, 0.9, 0, 10, 0.5, 0, vec3(0.8));
     closest_material(dist, mat, window(p + vec3(0,-0.5,1), inside == 1), ma(0.1, 0.9, 0, 10, 0, 1, vec3(0.8)));
+    closest_material(dist, mat, door(p + vec3(0,-0.5,1)), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.5)));
     closest_material(dist, mat, ground(p), ma(0.1, 0.9, 0, 10, 0.0, 0, vec3(0.8)));
     return dist;
 }
@@ -226,8 +235,8 @@ vec3 apply_reflections_and_transparency(vec3 color, ma mat, vec3 p, vec3 directi
 }
 
 vec3 render(float u, float v) {
-    vec3 eye_position = vec3(0, 3, 4);
-    vec3 forward = normalize(vec3(0, 0, -3) - eye_position);
+    vec3 eye_position = vec3(0, 10, 15);
+    vec3 forward = normalize(vec3(0, 10, -3) - eye_position);
     vec3 up = vec3(0.0, 1.0, 0.0);
     vec3 right = normalize(cross(up, forward));
     up = cross(-right, forward);
