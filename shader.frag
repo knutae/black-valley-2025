@@ -119,7 +119,7 @@ float soft_shadow(vec3 p, vec3 light_direction, float sharpness) {
     p += light_direction * 0.1;
     float total_dist = 0.1;
     float res = 1.0;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 50; i++) {
         float dist = scene(p, m, 0);
         if (dist < 0.01) {
             return 0.0;
