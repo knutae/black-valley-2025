@@ -45,6 +45,9 @@ tr tr_colored_glass = tr(0.8, 1.1, vec3(0.8, 0.6, 0.1), 0.4);
 tr transparent_objects[2] = tr[2](tr_air, tr_colored_glass);
 
 float DRAW_DISTANCE = 500.0;
+float BATHROOM_WALL_DISTANCE = 15;
+float BODY_Z_DISTANCE = BATHROOM_WALL_DISTANCE - 10;
+float BODY_X_DISTANCE = 2;
 
 float origin_sphere(vec3 p, float radius) {
     return length(p) - radius;
@@ -80,14 +83,14 @@ float repeated_boxes_xy(vec3 p, vec3 dimensions, float corner_radius, float modu
 }
 
 float bathroom_wall(vec3 p) {
-    p.z += 20;
+    p.z += BATHROOM_WALL_DISTANCE;
     return min(
         p.z,
         repeated_boxes_xy(vec3(p.x, p.y, p.z + 0.48), vec3(0.5), 0.12, 1));
 }
 
 vec3 bathroom_wall_color(vec3 p) {
-    p.z += 20;
+    p.z += BATHROOM_WALL_DISTANCE;
     vec3 front = vec3(1);
     vec3 back = vec3(0.3);
     float a = clamp(p.z * 100, 0, 1);
@@ -223,7 +226,7 @@ vec3 wallpaper_color(vec3 p) {
 
 float sink(vec3 p) {
     p.x += 5;
-    p.z += 20;
+    p.z += BATHROOM_WALL_DISTANCE;
     p.y -= 2;
     float dist = origin_box(p, vec3(1, 5, 1), 0.5);
     p.y -= 5;
@@ -234,7 +237,7 @@ float sink(vec3 p) {
 
 float mirror(vec3 p) {
     p.x += 5;
-    p.z += 20;
+    p.z += BATHROOM_WALL_DISTANCE;
     p.y -= 16;
     return origin_box(p, vec3(8, 6, 0.1), 0.05);
 }
@@ -261,9 +264,9 @@ float sdEllipsoid( vec3 p, vec3 r )
 }
 
 float lower_body(vec3 p) {
-    p.x += 3;
+    p.x += BODY_X_DISTANCE;
     p.x = abs(p.x) - 0.8;
-    p.z += 10;
+    p.z += BODY_Z_DISTANCE;
     float dist = sdRoundCone(p, 0.4, 0.5, 4);
     p.y -= 4;
     p.xy *= rotate(-5);
@@ -274,9 +277,9 @@ float lower_body(vec3 p) {
 }
 
 float upper_body(vec3 p) {
-    p.x += 3;
+    p.x += BODY_X_DISTANCE;
     p.y -= 7;
-    p.z += 10;
+    p.z += BODY_Z_DISTANCE;
     float dist = sdRoundCone(p, 1, 0.8, 1);
     p.y -= 1;
     dist = opSmoothUnion(dist, sdRoundCone(p, 0.8, 1.1, 3), 0.1);
@@ -286,8 +289,8 @@ float upper_body(vec3 p) {
 }
 
 float arms(vec3 p) {
-    p.x += 3;
-    p.z += 10;
+    p.x += BODY_X_DISTANCE;
+    p.z += BODY_Z_DISTANCE;
     p.y -= 11;
     p.x = abs(p.x) - 0.7;
     p.xy *= rotate(150);
@@ -307,8 +310,8 @@ float body(vec3 p) {
 }
 
 float hair(vec3 p) {
-    p.x += 3;
-    p.z += 9.5;
+    p.x += BODY_X_DISTANCE;
+    p.z += BODY_Z_DISTANCE - 0.5;
     p.y -= 7;
     float dist = sdRoundCone(p, 1.2, 1, 6);
     dist = max(dist, -p.y + 1);
@@ -320,12 +323,12 @@ float scene(vec3 p, out ma mat, int inside) {
     mat = ma(0, 0, 0, 10, 0, 0, vec3(0));
     closest_material(dist, mat, window(p + vec3(0,-0.5,1), inside == 1), ma(0.1, 0.9, 0, 10, 0, 1, vec3(0.8)));
     closest_material(dist, mat, door(p + vec3(0,-0.5,1)), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.5)));
+    closest_material(dist, mat, door_handle(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(0.8, 0.8, 0.4)));
     closest_material(dist, mat, bathroom_floor(p), ma(0.1, 0.9, 0, 10, 0.0, 0, bathroom_floor_color(p)));
     closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
     closest_material(dist, mat, front_wall(p), ma(0.03, 0.97, 0, 10, 0, 0, wallpaper_color(p)));
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
-    closest_material(dist, mat, door_handle(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(0.8, 0.8, 0.4)));
     closest_material(dist, mat, body(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(1, 0.8, 0.75)));
     closest_material(dist, mat, hair(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.1)));
     return dist;
@@ -390,8 +393,8 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
     vec3 normal = estimate_normal(p);
     vec3 light_positions[] = {
         vec3(15, 15, 5),
-        vec3(5, 26, -19),
-        vec3(-5, 26, -19),
+        vec3(5, 26, -BATHROOM_WALL_DISTANCE + 1),
+        vec3(-5, 26, -BATHROOM_WALL_DISTANCE + 1),
         vec3(5, 26, -3),
         vec3(-5, 26, -3),
     };
