@@ -179,6 +179,13 @@ float sink(vec3 p) {
     return dist;
 }
 
+float mirror(vec3 p) {
+    p.x += 5;
+    p.z += 20;
+    p.y -= 16;
+    return origin_box(p, vec3(8, 6, 0.1), 0.05);
+}
+
 float scene(vec3 p, out ma mat, int inside) {
     float dist = DRAW_DISTANCE;
     mat = ma(0, 0, 0, 10, 0, 0, vec3(0));
@@ -188,6 +195,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
     closest_material(dist, mat, front_wall(p), ma(0.01, 0.99, 0, 10, 0, 0, wallpaper_color(p)));
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
+    closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
     return dist;
 }
 
