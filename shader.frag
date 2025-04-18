@@ -78,6 +78,26 @@ float ground(vec3 p) {
         repeated_boxes_xz(vec3(p.x, p.y+2, p.z), vec3(1.1), 0.1, 5));
 }
 
+float repeated_boxes_xy(vec3 p, vec3 dimensions, float corner_radius, float modulo) {
+    p.xy = mod(p.xy - 0.5 * modulo, modulo) - 0.5 * modulo;
+    return origin_box(p, dimensions, corner_radius);
+}
+
+float bathroom_wall(vec3 p) {
+    p.z += 20;
+    return min(
+        p.z,
+        repeated_boxes_xy(vec3(p.x, p.y, p.z + 0.48), vec3(0.5), 0.12, 1));
+}
+
+vec3 bathroom_wall_color(vec3 p) {
+    p.z += 20;
+    vec3 front = vec3(1);
+    vec3 back = vec3(0.3);
+    float a = clamp(p.z * 100, 0, 1);
+    return mix(back, front, a);
+}
+
 float window(vec3 p, bool inside) {
     vec3 q = p;
     q.xy *= rotate(-20);
@@ -110,6 +130,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, window(p + vec3(0,-0.5,1), inside == 1), ma(0.1, 0.9, 0, 10, 0, 1, vec3(0.8)));
     closest_material(dist, mat, door(p + vec3(0,-0.5,1)), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.5)));
     closest_material(dist, mat, ground(p), ma(0.1, 0.9, 0, 10, 0.0, 0, vec3(0.8)));
+    closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
     return dist;
 }
 
