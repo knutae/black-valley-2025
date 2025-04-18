@@ -156,7 +156,17 @@ float opSmoothIntersection( float d1, float d2, float k )
     return mix( d2, d1, h ) + k*h*(1.0-h);
 }
 
+float keyhole(vec3 p) {
+    p.x -= 4;
+    p.y -= 6.2;
+    float dist = length(p.xy) - 0.13;
+    p.y += 0.2;
+    dist = min(dist, origin_box(p, vec3(0.07, 0.2, 2), 0));
+    return dist;
+}
+
 float door_handle(vec3 p) {
+    float hole = keyhole(p);
     vec3 q = p;
     q.x -= 2;
     q.y -= 7;
@@ -169,6 +179,7 @@ float door_handle(vec3 p) {
     p.z += 2;
     p.x -= 4;
     dist = min(dist, origin_box(p, vec3(0.5, 1.3, 1.5), 0.15));
+    dist = opSmoothIntersection(dist, -hole, 0.05);
     return dist;
 }
 
