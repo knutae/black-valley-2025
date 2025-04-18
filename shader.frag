@@ -269,10 +269,10 @@ float lower_body(vec3 p) {
     p.x += BODY_X_DISTANCE;
     p.x = abs(p.x) - 0.8;
     p.z += BODY_Z_DISTANCE;
-    float dist = sdRoundCone(p, 0.4, 0.5, 4);
+    float dist = sdRoundCone(p, 0.5, 0.6, 4);
     p.y -= 4;
     p.xy *= rotate(-5);
-    dist = opSmoothUnion(dist, sdRoundCone(p, 0.5, 0.6, 3), 0.01);
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.6, 0.65, 3), 0.01);
     p.y -= 7;
     dist = opSmoothUnion(dist, origin_sphere(vec3(p.x + 0.4, p.y, p.z), 0.8), 0.1);
     return dist;
@@ -282,9 +282,9 @@ float upper_body(vec3 p) {
     p.x += BODY_X_DISTANCE;
     p.y -= 7;
     p.z += BODY_Z_DISTANCE;
-    float dist = sdRoundCone(p, 1, 0.8, 1);
+    float dist = sdRoundCone(p, 1, 0.9, 1);
     p.y -= 1;
-    dist = opSmoothUnion(dist, sdRoundCone(p, 0.8, 1.1, 3), 0.1);
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.9, 1.1, 3), 0.1);
     p.y -= 5;
     dist = opSmoothUnion(dist, sdEllipsoid(p, vec3(0.7, 1, 1)), 0.2);
     return dist;
