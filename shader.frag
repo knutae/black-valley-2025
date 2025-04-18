@@ -146,6 +146,7 @@ float door(vec3 p) {
 
 float front_wall(vec3 p) {
     p.z += 1;
+    p.z += 0.006 * sin(203 * p.x) + 0.005*sin(11*p.x);
     float dist = abs(p.z) - 0.45;
     p.y -= 9;
     vec2 q = abs(p.xy) - vec2(5.1, 10.1);
@@ -231,7 +232,7 @@ vec3 apply_fog(vec3 color, float total_distance, tr transparency) {
 vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
     vec3 normal = estimate_normal(p);
     vec3 light_positions[] = {
-        vec3(10, 15, 5),
+        vec3(15, 15, 5),
         vec3(5, 26, -19),
         vec3(-5, 26, -19),
     };
