@@ -146,7 +146,9 @@ float door(vec3 p) {
 
 float front_wall(vec3 p) {
     p.z += 1;
-    p.z += 0.006 * sin(203 * p.x) + 0.005*sin(11*p.x);
+    if (p.z > -0.1) {
+        p.z += 0.006 * sin(203 * p.x) + 0.005*sin(11*p.x);
+    }
     float dist = abs(p.z) - 0.45;
     p.y -= 9;
     vec2 q = abs(p.xy) - vec2(5.1, 10.1);
@@ -155,6 +157,9 @@ float front_wall(vec3 p) {
 }
 
 vec3 wallpaper_color(vec3 p) {
+    if (p.z < -1.1) {
+        return vec3(1);
+    }
     float modulo = 1.5;
     p.xy *= rotate(45);
     p.xy = mod(p.xy - 0.5 * modulo, modulo) - 0.5 * modulo;
