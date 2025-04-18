@@ -116,10 +116,22 @@ float door_moldings(vec3 p, float width, float height) {
     float dist;
     vec3 q = p;
     q.y = abs(q.y) - height + 0.2;
-    dist = origin_box(q, vec3(width, 0.2, 0.5), 0.05);
+    vec3 r = p;
+    r.y = abs(r.y) - height - width;
+    r.xy *= rotate(45);
+    q.yz *= rotate(10);
+    dist = max(
+        origin_box(q, vec3(width + 0.2, 0.2, 0.5), 0.05),
+        origin_box(r, vec3(sqrt(width*width*2)), 0));
     q = p;
+    r = q;
+    r.x = abs(r.x) - width - height;
+    r.xy *= rotate(45);
     q.x = abs(q.x) - width + 0.2;
-    dist = min(dist, origin_box(q, vec3(0.2, height, 0.5), 0.05));
+    q.xz *= rotate(10);
+    dist = min(dist, max(
+        origin_box(q, vec3(0.2, height + 0.2, 0.5), 0.05),
+        origin_box(r, vec3(sqrt(height*height*2)), 0)));
     return dist;
 }
 
@@ -128,7 +140,7 @@ float door(vec3 p) {
     float dist = origin_box(p, vec3(5, 10, 0.4), 0.1);
     dist = max(dist, -origin_box(p, vec3(3, 8, 1), 0.01));
     dist = min(dist, door_moldings(p, 3, 8));
-    dist = min(dist, door_moldings(p, 5, 10));
+    dist = min(dist, door_moldings(p, 5.2, 9.8));
     return dist;
 }
 
