@@ -252,9 +252,13 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
         vec3(15, 15, 5),
         vec3(5, 26, -19),
         vec3(-5, 26, -19),
+        vec3(5, 26, -3),
+        vec3(-5, 26, -3),
     };
     vec3 light_colors[] = {
         vec3(0.3),
+        vec3(1),
+        vec3(1),
         vec3(1),
         vec3(1),
     };
@@ -262,9 +266,11 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
         -0.01,
         -0.05,
         -0.05,
+        -0.05,
+        -0.05,
     };
     vec3 diffuse_and_specular_sum = vec3(0);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 5; i++) {
         vec3 light_pos = light_positions[i];
         vec3 light_color = light_colors[i];
         vec3 light_direction = normalize(p - light_pos);
