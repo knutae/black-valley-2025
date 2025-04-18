@@ -51,10 +51,6 @@ float origin_sphere(vec3 p, float radius, bool inside) {
     return inside ? -dist : dist;
 }
 
-float horizontal_plane(vec3 p, float height) {
-    return p.y - height;
-}
-
 float origin_box(vec3 p, vec3 dimensions, float corner_radius) {
     vec3 q = abs(p) - dimensions + corner_radius;
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - corner_radius;
@@ -72,10 +68,11 @@ float repeated_boxes_xz(vec3 p, vec3 dimensions, float corner_radius, float modu
     return origin_box(p, dimensions, corner_radius);
 }
 
-float ground(vec3 p) {
+float bathroom_floor(vec3 p) {
+    p.y += 2.5;
     return min(
-        horizontal_plane(p, -1),
-        repeated_boxes_xz(vec3(p.x, p.y+2, p.z), vec3(1.1), 0.1, 5));
+        p.y,
+        repeated_boxes_xz(vec3(p.x, p.y + 0.48, p.z), vec3(0.5), 0.12, 1));
 }
 
 float repeated_boxes_xy(vec3 p, vec3 dimensions, float corner_radius, float modulo) {
@@ -95,6 +92,14 @@ vec3 bathroom_wall_color(vec3 p) {
     vec3 front = vec3(1);
     vec3 back = vec3(0.3);
     float a = clamp(p.z * 100, 0, 1);
+    return mix(back, front, a);
+}
+
+vec3 bathroom_floor_color(vec3 p) {
+    p.y += 2.5;
+    vec3 front = vec3(1);
+    vec3 back = vec3(0.3);
+    float a = clamp(p.y * 100, 0, 1);
     return mix(back, front, a);
 }
 
@@ -138,7 +143,7 @@ float scene(vec3 p, out ma mat, int inside) {
     mat = ma(0.1, 0.9, 0, 10, 0.5, 0, vec3(0.8));
     closest_material(dist, mat, window(p + vec3(0,-0.5,1), inside == 1), ma(0.1, 0.9, 0, 10, 0, 1, vec3(0.8)));
     closest_material(dist, mat, door(p + vec3(0,-0.5,1)), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.5)));
-    closest_material(dist, mat, ground(p), ma(0.1, 0.9, 0, 10, 0.0, 0, vec3(0.8)));
+    closest_material(dist, mat, bathroom_floor(p), ma(0.1, 0.9, 0, 10, 0.0, 0, bathroom_floor_color(p)));
     closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
     closest_material(dist, mat, front_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.2, 0.3, 0.2)));
     return dist;
