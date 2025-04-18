@@ -97,7 +97,7 @@ vec3 bathroom_wall_color(vec3 p) {
 
 vec3 bathroom_floor_color(vec3 p) {
     p.y += 2.5;
-    vec3 front = vec3(1);
+    vec3 front = vec3(0.8, 1, 0.8);
     vec3 back = vec3(0.3);
     float a = clamp(p.y * 100, 0, 1);
     return mix(back, front, a);
