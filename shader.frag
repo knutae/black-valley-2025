@@ -514,32 +514,13 @@ vec3 render(float u, float v) {
     return color;
 }
 
-vec3 render_aa(float u, float v) {
-    // Antialiasing: render and blend 2x2 points per pixel.
-    // That means the distance between points is 1/2 pixel,
-    // and the distance from the center (du, dv) is 1/4 pixel.
-    // Each pixel size is (2.0 / W, 2.0 / H) since the full area is -1 to 1.
-    float du = 2.0 / SIZE.x / 4.0;
-    float dv = 2.0 / SIZE.y / 4.0;
-    vec3 sum =
-        render(u - du, v - dv) +
-        render(u - du, v + dv) +
-        render(u + du, v - dv) +
-        render(u + du, v + dv);
-    return sum / 4;
-}
-
 void main() {
     float u = C.x - 1.0;
     float v = (C.y - 1.0) * SIZE.y / SIZE.x;
 #ifdef SPIRV
     vec3 F;
 #endif
-#if defined(DEBUG)
     F = render(u, v);
-#else
-    F = render_aa(u, v);
-#endif
     // vignette
     float edge = abs(C.x - 1) + abs(C.y - 1);
     F = mix(F, vec3(0), min(1, max(0, edge*0.3 - 0.2)));
