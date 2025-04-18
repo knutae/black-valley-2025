@@ -40,7 +40,7 @@ struct tr {
     float E; // fog exponent
 };
 
-tr tr_air = tr(1.0, 1.0, background_color, 0.01);
+tr tr_air = tr(1.0, 1.0, background_color, 0.001);
 tr tr_colored_glass = tr(0.8, 1.1, vec3(0.8, 0.6, 0.1), 0.4);
 tr transparent_objects[2] = tr[2](tr_air, tr_colored_glass);
 
