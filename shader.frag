@@ -316,7 +316,7 @@ float hair(vec3 p) {
     p.x += BODY_X_DISTANCE;
     p.z += BODY_Z_DISTANCE - 0.5;
     p.y -= 7;
-    float dist = sdRoundCone(p, 1.2, 1, 6);
+    float dist = sdRoundCone(p, 1.5, 1, 6);
     dist = max(dist, -p.y + 1);
     return dist;
 }
