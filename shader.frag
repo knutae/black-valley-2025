@@ -163,6 +163,17 @@ vec3 wallpaper_color(vec3 p) {
     return (p.x*p.y) < 0 ? col1 : col2;
 }
 
+float sink(vec3 p) {
+    p.x += 5;
+    p.z += 20;
+    p.y -= 2;
+    float dist = origin_box(p, vec3(1, 5, 1), 0.5);
+    p.y -= 5;
+    p.z -= 2;
+    dist = min(dist, origin_box(p, vec3(8, 2, 2), 0.5));
+    return dist;
+}
+
 float scene(vec3 p, out ma mat, int inside) {
     float dist = DRAW_DISTANCE;
     mat = ma(0, 0, 0, 10, 0, 0, vec3(0));
@@ -171,6 +182,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, bathroom_floor(p), ma(0.1, 0.9, 0, 10, 0.0, 0, bathroom_floor_color(p)));
     closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
     closest_material(dist, mat, front_wall(p), ma(0.01, 0.99, 0, 10, 0, 0, wallpaper_color(p)));
+    closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     return dist;
 }
 
