@@ -306,6 +306,15 @@ float body(vec3 p) {
     return dist;
 }
 
+float hair(vec3 p) {
+    p.x += 3;
+    p.z += 9.5;
+    p.y -= 7;
+    float dist = sdRoundCone(p, 1.2, 1, 6);
+    dist = max(dist, -p.y + 1);
+    return dist;
+}
+
 float scene(vec3 p, out ma mat, int inside) {
     float dist = DRAW_DISTANCE;
     mat = ma(0, 0, 0, 10, 0, 0, vec3(0));
@@ -318,6 +327,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
     closest_material(dist, mat, door_handle(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(0.8, 0.8, 0.4)));
     closest_material(dist, mat, body(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(1, 0.8, 0.75)));
+    closest_material(dist, mat, hair(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.1)));
     return dist;
 }
 
