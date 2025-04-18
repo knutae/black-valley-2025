@@ -205,7 +205,7 @@ float door_handle(vec3 p) {
 float front_wall(vec3 p) {
     p.z += 1;
     if (p.z > -0.1) {
-        p.z += 0.006 * sin(203 * p.x) + 0.005*sin(11*p.x);
+        p.z += 0.003 * sin(203 * p.x) + 0.005*sin(11*p.x);
     }
     float dist = abs(p.z) - 0.45;
     p.y -= 9;
