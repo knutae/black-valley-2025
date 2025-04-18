@@ -112,20 +112,23 @@ float window(vec3 p, bool inside) {
     return inside ? -dist : dist;
 }
 
+float door_moldings(vec3 p, float width, float height) {
+    float dist;
+    vec3 q = p;
+    q.y = abs(q.y) - height + 0.2;
+    dist = origin_box(q, vec3(width, 0.2, 0.5), 0.05);
+    q = p;
+    q.x = abs(q.x) - width + 0.2;
+    dist = min(dist, origin_box(q, vec3(0.2, height, 0.5), 0.05));
+    return dist;
+}
+
 float door(vec3 p) {
     p.y -= 9;
     float dist = origin_box(p, vec3(5, 10, 0.4), 0.1);
     dist = max(dist, -origin_box(p, vec3(3, 8, 1), 0.01));
-    {
-        vec3 q = p;
-        q.y = abs(q.y) - 7.8;
-        dist = min(dist, origin_box(q, vec3(3, 0.2, 0.5), 0.05));
-    }
-    {
-        vec3 q = p;
-        q.x = abs(q.x) - 2.8;
-        dist = min(dist, origin_box(q, vec3(0.2, 8, 0.5), 0.05));
-    }
+    dist = min(dist, door_moldings(p, 3, 8));
+    dist = min(dist, door_moldings(p, 5, 10));
     return dist;
 }
 
