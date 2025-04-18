@@ -164,6 +164,12 @@ float opSmoothIntersection( float d1, float d2, float k )
     return mix( d2, d1, h ) + k*h*(1.0-h);
 }
 
+float opSmoothUnion( float d1, float d2, float k )
+{
+    float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 );
+    return mix( d2, d1, h ) - k*h*(1.0-h);
+}
+
 float keyhole(vec3 p) {
     p.x -= 4;
     p.y -= 6.2;
@@ -233,6 +239,73 @@ float mirror(vec3 p) {
     return origin_box(p, vec3(8, 6, 0.1), 0.05);
 }
 
+float sdRoundCone( vec3 p, float r1, float r2, float h )
+{
+  // sampling independent computations (only depend on shape)
+  float b = (r1-r2)/h;
+  float a = sqrt(1.0-b*b);
+
+  // sampling dependant computations
+  vec2 q = vec2( length(p.xz), p.y );
+  float k = dot(q,vec2(-b,a));
+  if( k<0.0 ) return length(q) - r1;
+  if( k>a*h ) return length(q-vec2(0.0,h)) - r2;
+  return dot(q, vec2(a,b) ) - r1;
+}
+
+float sdEllipsoid( vec3 p, vec3 r )
+{
+  float k0 = length(p/r);
+  float k1 = length(p/(r*r));
+  return k0*(k0-1.0)/k1;
+}
+
+float lower_body(vec3 p) {
+    p.x += 3;
+    p.x = abs(p.x) - 0.8;
+    p.z += 10;
+    float dist = sdRoundCone(p, 0.4, 0.5, 4);
+    p.y -= 4;
+    p.xy *= rotate(-5);
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.5, 0.6, 3), 0.01);
+    p.y -= 7;
+    dist = opSmoothUnion(dist, origin_sphere(vec3(p.x + 0.4, p.y, p.z), 0.8), 0.1);
+    return dist;
+}
+
+float upper_body(vec3 p) {
+    p.x += 3;
+    p.y -= 7;
+    p.z += 10;
+    float dist = sdRoundCone(p, 1, 0.8, 1);
+    p.y -= 1;
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.8, 1.1, 3), 0.1);
+    p.y -= 5;
+    dist = opSmoothUnion(dist, sdEllipsoid(p, vec3(0.7, 1, 1)), 0.2);
+    return dist;
+}
+
+float arms(vec3 p) {
+    p.x += 3;
+    p.z += 10;
+    p.y -= 11;
+    p.x = abs(p.x) - 0.7;
+    p.xy *= rotate(150);
+    p.yz *= rotate(30);
+    float dist = sdRoundCone(p, 0.6, 0.5, 3);
+    p.y -= 3;
+    p.yz *= rotate(80);
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.5, 0.35, 2), 0.1);
+    return dist;
+}
+
+float body(vec3 p) {
+    float dist = lower_body(p);
+    dist = opSmoothUnion(dist, upper_body(p), 0.2);
+    dist = opSmoothUnion(dist, arms(p), 0.1);
+    return dist;
+}
+
 float scene(vec3 p, out ma mat, int inside) {
     float dist = DRAW_DISTANCE;
     mat = ma(0, 0, 0, 10, 0, 0, vec3(0));
@@ -244,6 +317,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
     closest_material(dist, mat, door_handle(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(0.8, 0.8, 0.4)));
+    closest_material(dist, mat, body(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(1, 0.8, 0.75)));
     return dist;
 }
 
