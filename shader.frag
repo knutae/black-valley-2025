@@ -295,12 +295,13 @@ float arms(vec3 p) {
     p.z += BODY_Z_DISTANCE;
     p.y -= 11;
     p.x = abs(p.x) - 0.7;
-    p.xy *= rotate(150);
-    p.yz *= rotate(30);
+    p.xy *= rotate(60);
+    p.yz *= rotate(50);
     float dist = sdRoundCone(p, 0.6, 0.5, 3);
     p.y -= 3;
-    p.yz *= rotate(80);
-    dist = opSmoothUnion(dist, sdRoundCone(p, 0.5, 0.35, 2), 0.1);
+    p.yz *= rotate(70);
+    p.xy *= rotate(-60);
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.5, 0.35, 2.5), 0.1);
     return dist;
 }
 
