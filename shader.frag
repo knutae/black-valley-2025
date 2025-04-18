@@ -174,7 +174,7 @@ vec3 ray_reflection(vec3 direction, vec3 normal) {
     return 2.0 * dot(-direction, normal) * normal + direction;
 }
 
-float soft_shadow(vec3 p, vec3 light_direction, float sharpness) {
+float soft_shadow(vec3 p, vec3 light_direction, float max_distance, float sharpness) {
     ma m;
     p += light_direction * 0.1;
     float total_dist = 0.1;
@@ -186,7 +186,7 @@ float soft_shadow(vec3 p, vec3 light_direction, float sharpness) {
         }
         total_dist += dist;
         res = min(res, sharpness * dist / total_dist);
-        if (total_dist > DRAW_DISTANCE) {
+        if (total_dist > max_distance) {
             break;
         }
         p += light_direction * dist;
@@ -201,12 +201,35 @@ vec3 apply_fog(vec3 color, float total_distance, tr transparency) {
 
 vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
     vec3 normal = estimate_normal(p);
-    vec3 light_direction = normalize(vec3(-0.3, -1.0, -0.5));
-    float shadow = soft_shadow(p, -light_direction, 20.0);
-    float diffuse = max(0.0, mat.D * dot(normal, -light_direction)) * shadow;
-    vec3 reflection = ray_reflection(ray_direction, normal);
-    float specular = pow(max(0.0, mat.P * dot(reflection, -light_direction)), mat.S) * shadow;
-    return min(mat.C * (diffuse + mat.A) + vec3(specular), vec3(1.0));
+    vec3 light_positions[] = {
+        vec3(10, 15, 5),
+        vec3(5, 26, -19),
+        vec3(-5, 26, -19),
+    };
+    vec3 light_colors[] = {
+        vec3(0.3),
+        vec3(1),
+        vec3(1),
+    };
+    float light_dropoff[] = {
+        -0.01,
+        -0.05,
+        -0.05,
+    };
+    vec3 diffuse_and_specular_sum = vec3(0);
+    for (int i = 0; i < 3; i++) {
+        vec3 light_pos = light_positions[i];
+        vec3 light_color = light_colors[i];
+        vec3 light_direction = normalize(p - light_pos);
+        float light_distance = length(p - light_pos);
+        float light_intensity = exp(light_dropoff[i] * light_distance);
+        float shadow = soft_shadow(p, -light_direction, light_distance, 40.0);
+        float diffuse = max(0.0, mat.D * dot(normal, -light_direction)) * shadow * light_intensity;
+        vec3 reflection = ray_reflection(ray_direction, normal);
+        float specular = pow(max(0.0, mat.P * dot(reflection, -light_direction)), mat.S) * shadow;
+        diffuse_and_specular_sum += (mat.C * diffuse * light_color) + vec3(specular);
+    }
+    return min(mat.A + diffuse_and_specular_sum, vec3(1.0));
 }
 
 vec3 apply_reflections_and_transparency(vec3 color, ma mat, vec3 p, vec3 direction) {
