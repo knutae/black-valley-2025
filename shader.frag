@@ -124,6 +124,15 @@ float door(vec3 p) {
     return dist;
 }
 
+float front_wall(vec3 p) {
+    p.z += 1;
+    float dist = abs(p.z) - 0.45;
+    p.y -= 9;
+    vec2 q = abs(p.xy) - vec2(5.1, 10.1);
+    float doorway = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+    return max(dist, -doorway);
+}
+
 float scene(vec3 p, out ma mat, int inside) {
     float dist = origin_sphere(p + vec3(0.0, 0.0, 3.0), 1, false);
     mat = ma(0.1, 0.9, 0, 10, 0.5, 0, vec3(0.8));
@@ -131,6 +140,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, door(p + vec3(0,-0.5,1)), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.5)));
     closest_material(dist, mat, ground(p), ma(0.1, 0.9, 0, 10, 0.0, 0, vec3(0.8)));
     closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
+    closest_material(dist, mat, front_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.2, 0.3, 0.2)));
     return dist;
 }
 
