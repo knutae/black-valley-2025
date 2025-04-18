@@ -155,10 +155,10 @@ float door(vec3 p) {
     return dist;
 }
 
-float sdLink( vec3 p, float le, float r1, float r2 )
+float sdCappedCylinder( vec3 p, float h, float r )
 {
-  vec3 q = vec3( p.x, max(abs(p.y)-le,0.0), p.z );
-  return length(vec2(length(q.xy)-r1,q.z)) - r2;
+  vec2 d = abs(vec2(length(p.xz),p.y)) - vec2(r,h);
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
 
 float opSmoothIntersection( float d1, float d2, float k )
@@ -184,17 +184,19 @@ float keyhole(vec3 p) {
 
 float door_handle(vec3 p) {
     float hole = keyhole(p);
-    vec3 q = p;
-    q.x -= 2;
-    q.y -= 7;
-    q.z += 1;
-    q.xy *= rotate(90);
-    q.xz *= rotate(90);
-    float dist = sdLink(q, 0.3, 1.8, 0.2);
-    dist = opSmoothIntersection(dist, -q.y - 0.3, 0.3);
-    p.y -= 6.5;
     p.z += 2;
     p.x -= 4;
+    p.y -= 7;
+    vec3 q = p;
+    q.yz *= rotate(90);
+    float dist = sdCappedCylinder(q, 2, 0.2);
+    q = p;
+    q.xy *= rotate(-90);
+    q.z = abs(q.z) - 2;
+    dist = opSmoothUnion(dist, origin_sphere(q, 0.28), 0.05);
+    q.y -= 1;
+    dist = opSmoothUnion(dist, sdCappedCylinder(q, 1, 0.2), 0.1);
+    p.y += 0.5;
     dist = min(dist, origin_box(p, vec3(0.5, 1.3, 1.5), 0.15));
     dist = opSmoothIntersection(dist, -hole, 0.05);
     return dist;
