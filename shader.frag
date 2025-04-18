@@ -46,9 +46,8 @@ tr transparent_objects[2] = tr[2](tr_air, tr_colored_glass);
 
 float DRAW_DISTANCE = 500.0;
 
-float origin_sphere(vec3 p, float radius, bool inside) {
-    float dist = length(p) - radius;
-    return inside ? -dist : dist;
+float origin_sphere(vec3 p, float radius) {
+    return length(p) - radius;
 }
 
 float origin_box(vec3 p, vec3 dimensions, float corner_radius) {
@@ -103,12 +102,21 @@ vec3 bathroom_floor_color(vec3 p) {
     return mix(back, front, a);
 }
 
+float repeated_spheres_xy(vec3 p, float radius, float modulo) {
+    p.xy = mod(p.xy - 0.5 * modulo, modulo) - 0.5 * modulo;
+    return origin_sphere(p, radius);
+}
+
 float window(vec3 p, bool inside) {
     vec3 q = p;
     q.xy *= rotate(-20);
     p.z += 0.005 * sin(q.x * 50 + 2 * sin(q.y * 15));
     p.y -= 9;
     float dist = origin_box(p, vec3(3.5, 8.5, 0.3), 0.1);
+    q = p;
+    q.z = abs(p.z - 0.6);
+    float spheres = repeated_spheres_xy(q, 0.4, 0.5);
+    dist = max(dist, -spheres);
     return inside ? -dist : dist;
 }
 
