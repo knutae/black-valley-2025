@@ -144,6 +144,34 @@ float door(vec3 p) {
     return dist;
 }
 
+float sdLink( vec3 p, float le, float r1, float r2 )
+{
+  vec3 q = vec3( p.x, max(abs(p.y)-le,0.0), p.z );
+  return length(vec2(length(q.xy)-r1,q.z)) - r2;
+}
+
+float opSmoothIntersection( float d1, float d2, float k )
+{
+    float h = clamp( 0.5 - 0.5*(d2-d1)/k, 0.0, 1.0 );
+    return mix( d2, d1, h ) + k*h*(1.0-h);
+}
+
+float door_handle(vec3 p) {
+    vec3 q = p;
+    q.x -= 2;
+    q.y -= 7;
+    q.z += 1;
+    q.xy *= rotate(90);
+    q.xz *= rotate(90);
+    float dist = sdLink(q, 0.3, 1.8, 0.2);
+    dist = opSmoothIntersection(dist, -q.y - 0.3, 0.3);
+    p.y -= 6.5;
+    p.z += 2;
+    p.x -= 4;
+    dist = min(dist, origin_box(p, vec3(0.5, 1.3, 1.5), 0.15));
+    return dist;
+}
+
 float front_wall(vec3 p) {
     p.z += 1;
     if (p.z > -0.1) {
@@ -196,6 +224,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, front_wall(p), ma(0.01, 0.99, 0, 10, 0, 0, wallpaper_color(p)));
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
+    closest_material(dist, mat, door_handle(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(0.8, 0.8, 0.4)));
     return dist;
 }
 
