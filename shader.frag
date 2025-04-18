@@ -30,7 +30,7 @@ struct ma {
     vec3 C; // RGB color
 };
 
-const vec3 background_color = vec3(0.8, 0.9, 1.0);
+const vec3 background_color = vec3(0.1);
 
 // Transparency parameters
 struct tr {
@@ -240,7 +240,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, door(p + vec3(0,-0.5,1)), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.5)));
     closest_material(dist, mat, bathroom_floor(p), ma(0.1, 0.9, 0, 10, 0.0, 0, bathroom_floor_color(p)));
     closest_material(dist, mat, bathroom_wall(p), ma(0.1, 0.9, 0, 10, 0, 0, bathroom_wall_color(p)));
-    closest_material(dist, mat, front_wall(p), ma(0.01, 0.99, 0, 10, 0, 0, wallpaper_color(p)));
+    closest_material(dist, mat, front_wall(p), ma(0.03, 0.97, 0, 10, 0, 0, wallpaper_color(p)));
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
     closest_material(dist, mat, door_handle(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(0.8, 0.8, 0.4)));
