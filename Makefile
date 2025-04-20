@@ -69,11 +69,15 @@ obj/%.o: %.c gen/glsl/shader.frag.h gen/glsl/static_shaders.h
 
 obj/%-debug.o: %.c gen/glsl/static_shaders.h
 	@mkdir -p obj
+	$(CC) -c $(CFLAGS) -DDEBUG -DINTERACTIVE_DEBUG -o $@ $<
+
+obj/%-static-debug.o: %.c gen/glsl/shader.frag.h gen/glsl/static_shaders.h
+	@mkdir -p obj
 	$(CC) -c $(CFLAGS) -DDEBUG -o $@ $<
 
 obj/%-spirv.o: %.c gen/spirv/static_shaders.h
 	@mkdir -p obj
-	$(CC) -c $(CFLAGS) -DSPIRV -DDEBUG -o $@ $<
+	$(CC) -c $(CFLAGS) -DSPIRV -DDEBUG  -DINTERACTIVE_DEBUG -o $@ $<
 
 bin/%: obj/%.o $(SSTRIP)
 	@mkdir -p bin
@@ -99,6 +103,10 @@ bin/%: obj/%.o $(SSTRIP)
 	$(SSTRIP) $@
 
 bin/%-debug: obj/%-debug.o
+	@mkdir -p bin
+	$(CC) -o $@ $^ $(DEBUG_LIBS)
+
+bin/%-static-debug: obj/%-static-debug.o
 	@mkdir -p bin
 	$(CC) -o $@ $^ $(DEBUG_LIBS)
 

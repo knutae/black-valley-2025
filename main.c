@@ -14,8 +14,11 @@
 #include "gen/glsl/static_shaders.h"
 #endif
 
-#ifndef DEBUG
+#ifndef INTERACTIVE_DEBUG
 #include "gen/glsl/shader.frag.h"
+#endif
+
+#ifndef DEBUG
 // Redefine GTK casting macros as direct casts
 #undef GTK_GL_AREA
 #undef GTK_CONTAINER
@@ -97,7 +100,7 @@ gboolean render(GtkGLArea *area, GdkGLContext *context) {
   return TRUE;
 }
 
-#ifdef DEBUG
+#ifdef INTERACTIVE_DEBUG
 void load_shader(GLuint shader, const char * filename, GLenum type) {
   FILE * f = fopen(filename, "r");
   if (!f) {
@@ -161,7 +164,7 @@ void realize(GtkGLArea *area) {
   GLuint vertex_shader = create_shader(shader_vert, GL_VERTEX_SHADER);
   GLuint geometry_shader = create_shader(shader_geom, GL_GEOMETRY_SHADER);
 #endif
-#ifdef DEBUG
+#ifdef INTERACTIVE_DEBUG
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   load_fragment_shader();
 #else
@@ -177,7 +180,7 @@ void realize(GtkGLArea *area) {
   glGenBuffers(1, &ubo);
 #endif
 
-#ifdef DEBUG
+#ifdef INTERACTIVE_DEBUG
   GFile * fragment_shader_file = g_file_new_for_path("shader.frag");
   GFileMonitor * file_monitor = g_file_monitor_file(fragment_shader_file, G_FILE_MONITOR_NONE, NULL, NULL);
   g_signal_connect(file_monitor, "changed", G_CALLBACK(fragment_shader_changed), area);
