@@ -339,7 +339,7 @@ float scene(vec3 p, out ma mat, int inside) {
 
 bool ray_march(inout vec3 p, vec3 direction, out ma material, int inside) {
     float total_dist = 0.0;
-    for (int i = 0; i < 5000; i++) {
+    for (int i = 0; i < 4000; i++) {
         float dist = scene(p, material, inside);
         if (dist < 0.001) {
             return true;
