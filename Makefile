@@ -14,6 +14,7 @@ SOULCRUSH = ./soulcrush/target/release/soulcrush
 EXE = bin/main-4k
 DEBUG_EXE = bin/main-debug
 SPIRV_EXE = bin/main-spirv
+ZIP_BUNDLE = bin/main.zip
 
 all: $(EXE)
 
@@ -25,6 +26,8 @@ debug: $(DEBUG_EXE)
 
 spirv: $(SPIRV_EXE)
 	./$(SPIRV_EXE)
+
+bundle: $(ZIP_BUNDLE)
 
 clean:
 	rm -rf bin/ obj/ gen/
@@ -121,3 +124,6 @@ bin/%-spirv: obj/%-spirv.o
 	cat $^ > $@
 	chmod a+x $@
 	@stat --printf="$@: %s bytes\n" $@
+
+%.zip: %-4k %-static-debug
+	zip $@ $^
