@@ -318,7 +318,8 @@ float hair(vec3 p) {
     p.x += BODY_X_DISTANCE;
     p.z += BODY_Z_DISTANCE - 0.5;
     p.y -= 7;
-    float dist = sdRoundCone(p, 1.5, 1, 6);
+    float angle = atan(p.x, p.z);
+    float dist = sdRoundCone(p, 1.5, 0.9, 6) + 0.1 * sin(angle * 15);
     dist = max(dist, -p.y + 1);
     return dist;
 }
