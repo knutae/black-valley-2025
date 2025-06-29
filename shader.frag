@@ -114,9 +114,9 @@ float window(vec3 p, bool inside) {
     q.xy *= rotate(-20);
     p.z += 0.005 * sin(q.x * 50 + 2 * sin(q.y * 15));
     p.y -= 9;
-    float dist = origin_box(p, vec3(3.5, 8.5, 0.3), 0.1);
+    float dist = origin_box(p, vec3(3.5, 8.5, 0.2), 0.1);
     q = p;
-    q.z = abs(p.z - 0.6);
+    q.z = abs(p.z - 0.55);
     float spheres = repeated_spheres_xy(q, 0.4, 0.5);
     dist = max(dist, -spheres);
     return inside ? -dist : dist;
@@ -131,7 +131,7 @@ float door_moldings(vec3 p, float width, float height) {
     r.xy *= rotate(45);
     q.yz *= rotate(10);
     dist = max(
-        origin_box(q, vec3(width + 0.2, 0.2, 0.5), 0.05),
+        origin_box(q, vec3(width + 0.2, 0.2, 0.27), 0.05),
         origin_box(r, vec3(sqrt(width*width*2)), 0));
     q = p;
     r = q;
@@ -140,14 +140,14 @@ float door_moldings(vec3 p, float width, float height) {
     q.x = abs(q.x) - width + 0.2;
     q.xz *= rotate(10);
     dist = min(dist, max(
-        origin_box(q, vec3(0.2, height + 0.2, 0.5), 0.05),
+        origin_box(q, vec3(0.2, height + 0.2, 0.27), 0.05),
         origin_box(r, vec3(sqrt(height*height*2)), 0)));
     return dist;
 }
 
 float door(vec3 p) {
     p.y -= 9;
-    float dist = origin_box(p, vec3(5, 10, 0.4), 0.1);
+    float dist = origin_box(p, vec3(5, 10, 0.2), 0.1);
     dist = max(dist, -origin_box(p, vec3(3, 8, 1), 0.01));
     dist = min(dist, door_moldings(p, 3, 8));
     dist = min(dist, door_moldings(p, 5.2, 9.8));
@@ -206,7 +206,7 @@ float front_wall(vec3 p) {
     if (p.z > -0.1) {
         p.z += 0.003 * sin(203 * p.x) + 0.005*sin(11*p.x);
     }
-    float dist = abs(p.z) - 0.45;
+    float dist = abs(p.z) - 0.3;
     p.y -= 9;
     vec2 q = abs(p.xy) - vec2(5.1, 10.1);
     float doorway = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
