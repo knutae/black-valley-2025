@@ -217,7 +217,8 @@ float front_wall(vec3 p) {
 
 vec3 wallpaper_color(vec3 p) {
     if (p.z < -1.1) {
-        return vec3(1);
+        // inside bathroom wall, visible in mirror
+        return vec3(0.7);
     }
     float modulo = 1.5;
     vec2 q = p.xy * rotate(45);
