@@ -174,7 +174,7 @@ float opSmoothUnion( float d1, float d2, float k )
 
 float keyhole(vec3 p) {
     p.x -= 4;
-    p.y -= 6.2;
+    p.y += 0.8;
     float dist = length(p.xy) - 0.13;
     p.y += 0.2;
     dist = min(dist, origin_box(p, vec3(0.07, 0.2, 2), 0));
@@ -182,10 +182,10 @@ float keyhole(vec3 p) {
 }
 
 float door_handle(vec3 p) {
+    p.y -= 8.75;
     float hole = keyhole(p);
     p.z += 2;
     p.x -= 4;
-    p.y -= 7;
     vec3 q = p;
     q.yz *= rotate(90);
     float dist = sdCappedCylinder(q, 2, 0.2);
