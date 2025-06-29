@@ -331,7 +331,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, front_wall(p), ma(0.03, 0.97, 0, 10, 0, 0, wallpaper_color(p)));
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
-    closest_material(dist, mat, body(p), ma(0.15, 0.85, 0.8, 5, 0, 0, vec3(1, 0.8, 0.75)));
+    closest_material(dist, mat, body(p), ma(0.15, 0.85, 0.1, 10, 0, 0, vec3(1, 0.8, 0.75)));
     closest_material(dist, mat, hair(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.1)));
     return dist;
 }
