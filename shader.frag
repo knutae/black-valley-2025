@@ -268,10 +268,10 @@ float lower_body(vec3 p) {
     p.x += BODY_X_DISTANCE;
     p.x = abs(p.x) - 0.8;
     p.z += BODY_Z_DISTANCE;
-    float dist = sdRoundCone(p, 0.5, 0.6, 4);
+    float dist = sdRoundCone(p, 0.4, 0.55, 4);
     p.y -= 4;
     p.xy *= rotate(-5);
-    dist = opSmoothUnion(dist, sdRoundCone(p, 0.6, 0.65, 3), 0.01);
+    dist = opSmoothUnion(dist, sdRoundCone(p, 0.55, 0.65, 3), 0.003);
     p.y -= 7;
     dist = opSmoothUnion(dist, origin_sphere(vec3(p.x + 0.4, p.y, p.z), 0.8), 0.1);
     return dist;
