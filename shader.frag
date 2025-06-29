@@ -85,7 +85,7 @@ float bathroom_wall(vec3 p) {
     p.z += BATHROOM_WALL_DISTANCE;
     return min(
         p.z,
-        repeated_boxes_xy(vec3(p.x, p.y, p.z + 0.48), vec3(0.5), 0.12, 1));
+        repeated_boxes_xy(vec3(p.x, p.y, p.z + 0.48), vec3(1, 1, 0.5), 0.12, 2));
 }
 
 vec3 bathroom_wall_color(vec3 p) {
