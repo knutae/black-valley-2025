@@ -281,7 +281,7 @@ float upper_body(vec3 p) {
     p.x += BODY_X_DISTANCE;
     p.y -= 7;
     p.z += BODY_Z_DISTANCE;
-    float dist = sdRoundCone(p, 1, 0.9, 1);
+    float dist = sdRoundCone(p, 1.15, 0.9, 1);
     p.y -= 1;
     dist = opSmoothUnion(dist, sdRoundCone(p, 0.9, 1.1, 3), 0.1);
     p.y -= 5;
@@ -331,7 +331,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, front_wall(p), ma(0.03, 0.97, 0, 10, 0, 0, wallpaper_color(p)));
     closest_material(dist, mat, sink(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.7, 1, 0.7)));
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
-    closest_material(dist, mat, body(p), ma(0.1, 0.9, 0.8, 5, 0, 0, vec3(1, 0.8, 0.75)));
+    closest_material(dist, mat, body(p), ma(0.15, 0.85, 0.8, 5, 0, 0, vec3(1, 0.8, 0.75)));
     closest_material(dist, mat, hair(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.1)));
     return dist;
 }
