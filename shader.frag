@@ -194,7 +194,9 @@ float door_handle(vec3 p) {
     q.z = abs(q.z) - 2;
     dist = opSmoothUnion(dist, origin_sphere(q, 0.28), 0.05);
     q.y -= 1;
-    dist = opSmoothUnion(dist, sdCappedCylinder(q, 1, 0.2), 0.1);
+    vec3 r = q;
+    r.x += 0.2 + 0.2 * sin(r.y * 2 - 0.1);
+    dist = opSmoothUnion(dist, origin_box(r, vec3(0.1, 0.9, 0.15), 0.05), 0.1);
     p.y += 0.5;
     dist = min(dist, origin_box(p, vec3(0.5, 1.3, 1.5), 0.15));
     dist = opSmoothIntersection(dist, -hole, 0.05);
