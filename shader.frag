@@ -218,11 +218,11 @@ vec3 wallpaper_color(vec3 p) {
         return vec3(1);
     }
     float modulo = 1.5;
-    p.xy *= rotate(45);
-    p.xy = mod(p.xy - 0.5 * modulo, modulo) - 0.5 * modulo;
+    vec2 q = p.xy * rotate(45);
+    q = mod(q - 0.5 * modulo, modulo) - 0.5 * modulo;
     vec3 col1 = vec3(0.2, 0.4, 0.2);
     vec3 col2 = vec3(0.35, 0.2, 0.1);
-    return (p.x*p.y) < 0 ? col1 : col2;
+    return (q.x*q.y) < 0 ? col1 : col2;
 }
 
 float sink(vec3 p) {
