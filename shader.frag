@@ -220,8 +220,8 @@ vec3 wallpaper_color(vec3 p) {
     float modulo = 1.5;
     vec2 q = p.xy * rotate(45);
     q = mod(q - 0.5 * modulo, modulo) - 0.5 * modulo;
-    vec3 col1 = vec3(0.2, 0.4, 0.2);
-    vec3 col2 = vec3(0.35, 0.2, 0.1);
+    vec3 col1 = vec3(0.3, 0.7, 0.3);
+    vec3 col2 = vec3(0.6, 0.3, 0.15);
     return (q.x*q.y) < 0 ? col1 : col2;
 }
 
