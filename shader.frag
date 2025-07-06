@@ -42,6 +42,7 @@ struct tr {
 
 tr tr_air = tr(1.0, 1.0, background_color, 0.001);
 tr tr_colored_glass = tr(0.8, 1.1, vec3(0.8, 0.6, 0.1), 0.4);
+tr transparent_objects[] = {tr_air, tr_colored_glass};
 
 float DRAW_DISTANCE = 500.0;
 float BATHROOM_WALL_DISTANCE = 15;
@@ -444,7 +445,7 @@ vec3 apply_reflections_and_transparency(vec3 color, ma mat, vec3 p, vec3 directi
         float reflection = mat.R * blend_multiplier;
         if (index > 0) {
             tr tr_outside = tr_air;
-            tr tr_inside = tr_colored_glass; // the only transparent object
+            tr tr_inside = transparent_objects[index];
             float transparency = blend_multiplier * tr_inside.T;
             blend_multiplier *= transparency;
             // Offset the position to (hopefully) be inside the correct object
