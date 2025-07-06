@@ -42,7 +42,8 @@ struct tr {
 
 tr tr_air = tr(1.0, 1.0, background_color, 0.001);
 tr tr_colored_glass = tr(0.8, 1.1, vec3(0.8, 0.6, 0.1), 0.4);
-tr transparent_objects[] = {tr_air, tr_colored_glass};
+tr tr_lamp_glass = tr(0.2, 1.1, vec3(1, 0.6, 0.3), 0.9);
+tr transparent_objects[] = {tr_air, tr_colored_glass, tr_lamp_glass};
 
 float DRAW_DISTANCE = 500.0;
 float BATHROOM_WALL_DISTANCE = 15;
@@ -325,6 +326,22 @@ float hair(vec3 p) {
     return dist;
 }
 
+float LAMP_HEIGHT = 14.7;
+float LAMP_DIST = 10;
+
+float wavy_sphere(vec3 p, float radius) {
+    float angle = atan(p.x, p.z);
+    return length(p) - radius + 0.05*radius*sin(angle * 30 / HALF_PI);
+}
+
+float hallway_lamps(vec3 p, bool inside) {
+    p.x = abs(p.x) - LAMP_DIST;
+    p.y -= LAMP_HEIGHT;
+    p.z += 0.4;
+    float dist = max(max(wavy_sphere(p, 0.8), p.y - 0.3), -wavy_sphere(p, 0.6));
+    return inside ? -dist : dist;
+}
+
 float scene(vec3 p, out ma mat, int inside) {
     float dist = DRAW_DISTANCE;
     mat = ma(0, 0, 0, 10, 0, 0, vec3(0));
@@ -338,6 +355,7 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
     closest_material(dist, mat, body(p), ma(0.15, 0.85, 0.1, 10, 0, 0, vec3(1, 0.8, 0.75)));
     closest_material(dist, mat, hair(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.1)));
+    closest_material(dist, mat, hallway_lamps(p, inside == 2), ma(0.15, 0.85, 0, 10, 0, 2, vec3(1, 0.8, 0.4)));
     return dist;
 }
 
@@ -404,6 +422,8 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
         vec3(-5, 26, -BATHROOM_WALL_DISTANCE + 1),
         vec3(5, 26, -3),
         vec3(-5, 26, -3),
+        vec3(LAMP_DIST, LAMP_HEIGHT, -0.25),
+        vec3(-LAMP_DIST, LAMP_HEIGHT, -0.25),
     };
     vec3 light_colors[] = {
         vec3(0.3),
@@ -411,6 +431,8 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
         vec3(1),
         vec3(1),
         vec3(1),
+        vec3(1, 0.9, 0.5),
+        vec3(1, 0.9, 0.5),
     };
     float light_dropoff[] = {
         -0.01,
@@ -418,15 +440,18 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
         -0.05,
         -0.05,
         -0.05,
+        -0.05,
+        -0.05,
     };
     vec3 diffuse_and_specular_sum = vec3(0);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 7; i++) {
         vec3 light_pos = light_positions[i];
         vec3 light_color = light_colors[i];
         vec3 light_direction = normalize(p - light_pos);
         float light_distance = length(p - light_pos);
         float light_intensity = exp(light_dropoff[i] * light_distance);
-        float shadow = soft_shadow(p, -light_direction, light_distance, 40.0);
+        float sharpness = i >= 5 ? 5 : 40;
+        float shadow = soft_shadow(p, -light_direction, light_distance, sharpness);
         float diffuse = max(0.0, mat.D * dot(normal, -light_direction)) * shadow * light_intensity;
         vec3 reflection = ray_reflection(ray_direction, normal);
         float specular = pow(max(0.0, mat.P * dot(reflection, -light_direction)), mat.S) * shadow;
