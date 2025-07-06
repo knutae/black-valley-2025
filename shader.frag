@@ -397,23 +397,34 @@ vec3 apply_fog(vec3 color, float total_distance, tr transparency) {
 
 vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
     vec3 normal = estimate_normal(p);
+    vec3 light_positions[] = {
+        vec3(15, 15, 5),
+        vec3(5, 26, -BATHROOM_WALL_DISTANCE + 1),
+        vec3(-5, 26, -BATHROOM_WALL_DISTANCE + 1),
+        vec3(5, 26, -3),
+        vec3(-5, 26, -3),
+    };
+    vec3 light_colors[] = {
+        vec3(0.3),
+        vec3(1),
+        vec3(1),
+        vec3(1),
+        vec3(1),
+    };
+    float light_dropoff[] = {
+        -0.01,
+        -0.05,
+        -0.05,
+        -0.05,
+        -0.05,
+    };
     vec3 diffuse_and_specular_sum = vec3(0);
     for (int i = 0; i < 5; i++) {
-        vec3 light_pos = vec3(15, 15, 5);
-        if (i == 1) {
-            light_pos = vec3(5, 26, -BATHROOM_WALL_DISTANCE + 1);
-        } else if (i == 2) {
-            light_pos = vec3(-5, 26, -BATHROOM_WALL_DISTANCE + 1);
-        } else if (i == 3) {
-            light_pos = vec3(5, 26, -3);
-        } else if (i == 4) {
-            light_pos = vec3(-5, 26, -3);
-        }
-        vec3 light_color = i == 0 ? vec3(0.3) : vec3(1);
+        vec3 light_pos = light_positions[i];
+        vec3 light_color = light_colors[i];
         vec3 light_direction = normalize(p - light_pos);
         float light_distance = length(p - light_pos);
-        float light_dropoff = i == 0 ? -0.01 : -0.05;
-        float light_intensity = exp(light_dropoff * light_distance);
+        float light_intensity = exp(light_dropoff[i] * light_distance);
         float shadow = soft_shadow(p, -light_direction, light_distance, 40.0);
         float diffuse = max(0.0, mat.D * dot(normal, -light_direction)) * shadow * light_intensity;
         vec3 reflection = ray_reflection(ray_direction, normal);
