@@ -341,6 +341,7 @@ float hallway_lamps_glass(vec3 p, bool inside) {
     p.y -= LAMP_HEIGHT;
     p.z -= 0.02;
     p.yz *= rotate(90);
+    p.y += 0.01 * sin(p.x * 90);
     float dist = sdCappedCylinder(p, 0.1, 0.8);
     return inside ? -dist : dist;
 }
