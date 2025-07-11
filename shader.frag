@@ -116,7 +116,7 @@ float window(vec3 p, bool inside) {
     q.xy *= rotate(-20);
     p.z += 0.005 * sin(q.x * 50 + 2 * sin(q.y * 15));
     p.y -= 9;
-    float dist = origin_box(p, vec3(3.5, 8.5, 0.2), 0.1);
+    float dist = origin_box(p, vec3(3, 8, 0.2), 0.1);
     q = p;
     q.z = abs(p.z - 0.55);
     float spheres = repeated_spheres_xy(q, 0.4, 0.5);
