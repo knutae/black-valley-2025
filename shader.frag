@@ -177,9 +177,9 @@ float opSmoothUnion( float d1, float d2, float k )
 float keyhole(vec3 p) {
     p.x -= 4;
     p.y += 0.8;
-    float dist = length(p.xy) - 0.13;
+    float dist = length(p.xy) - 0.1;
     p.y += 0.2;
-    dist = min(dist, origin_box(p, vec3(0.07, 0.2, 2), 0));
+    dist = min(dist, origin_box(p, vec3(0.05, 0.2, 2), 0));
     return dist;
 }
 
