@@ -42,7 +42,7 @@ struct tr {
 
 tr tr_air = tr(1.0, 1.0, background_color, 0.001);
 tr tr_colored_glass = tr(0.8, 1.1, vec3(0.8, 0.6, 0.1), 0.4);
-tr tr_lamp_glass = tr(0.2, 1.1, vec3(1, 0.6, 0.3), 0.9);
+tr tr_lamp_glass = tr(0.15, 1.1, vec3(1, 0.6, 0.3), 0.9);
 tr transparent_objects[] = {tr_air, tr_colored_glass, tr_lamp_glass};
 
 float DRAW_DISTANCE = 500.0;
@@ -334,12 +334,27 @@ float wavy_sphere(vec3 p, float radius) {
     return length(p) - radius + 0.05*radius*sin(angle * 30 / HALF_PI);
 }
 
-float hallway_lamps(vec3 p, bool inside) {
+float hallway_lamps_glass(vec3 p, bool inside) {
     p.x = abs(p.x) - LAMP_DIST;
     p.y -= LAMP_HEIGHT;
-    p.z += 0.4;
-    float dist = max(max(wavy_sphere(p, 0.8), p.y - 0.3), -wavy_sphere(p, 0.6));
+    p.z -= 0.02;
+    p.yz *= rotate(90);
+    float dist = sdCappedCylinder(p, 0.1, 0.8);
     return inside ? -dist : dist;
+}
+
+float hallway_lamps_base(vec3 p) {
+    p.x = abs(p.x) - LAMP_DIST;
+    p.y -= LAMP_HEIGHT;
+    p.z += 0.25;
+    p.yz *= rotate(90);
+    p.xz *= rotate(45);
+    float dist = sdCappedCylinder(p, 0.4, 1);
+    dist = max(dist, -sdCappedCylinder(p, 0.5, 0.7));
+    p.y -= 0.1;
+    dist = max(dist, -origin_box(p, vec3(2, 0.4, 0.42), 0.1));
+    dist = max(dist, -origin_box(p, vec3(0.42, 0.4, 2), 0.1));
+    return dist;
 }
 
 float scene(vec3 p, out ma mat, int inside) {
@@ -355,7 +370,8 @@ float scene(vec3 p, out ma mat, int inside) {
     closest_material(dist, mat, mirror(p), ma(0.1, 0.9, 0, 10, 1, 0, vec3(0)));
     closest_material(dist, mat, body(p), ma(0.15, 0.85, 0.1, 10, 0, 0, vec3(1, 0.8, 0.75)));
     closest_material(dist, mat, hair(p), ma(0.1, 0.9, 0, 10, 0, 0, vec3(0.1)));
-    closest_material(dist, mat, hallway_lamps(p, inside == 2), ma(0.15, 0.85, 0, 10, 0, 2, vec3(1, 0.8, 0.4)));
+    closest_material(dist, mat, hallway_lamps_glass(p, inside == 2), ma(0.3, 0.7, 0, 10, 0, 2, vec3(1, 0.9, 0.7)));
+    closest_material(dist, mat, hallway_lamps_base(p), ma(0.1, 0.9, 0.8, 8, 0, 0, vec3(1, 0.9, 0.4)));
     return dist;
 }
 
@@ -422,8 +438,8 @@ vec3 phong_lighting(vec3 p, ma mat, vec3 ray_direction) {
         vec3(-5, 26, -BATHROOM_WALL_DISTANCE + 1),
         vec3(5, 26, -3),
         vec3(-5, 26, -3),
-        vec3(LAMP_DIST, LAMP_HEIGHT, -0.25),
-        vec3(-LAMP_DIST, LAMP_HEIGHT, -0.25),
+        vec3(LAMP_DIST, LAMP_HEIGHT, -0.32),
+        vec3(-LAMP_DIST, LAMP_HEIGHT, -0.32),
     };
     vec3 light_colors[] = {
         vec3(0.3),
