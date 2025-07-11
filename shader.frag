@@ -149,7 +149,9 @@ float door_moldings(vec3 p, float width, float height) {
 
 float door(vec3 p) {
     p.y -= 9;
-    float dist = origin_box(p, vec3(5, 10, 0.2), 0.1);
+    vec3 q = p;
+    q.z += 1e-3 * sin(sqrt(pow(p.x+15,2) + pow(p.y+10,2))*50);
+    float dist = origin_box(q, vec3(5, 10, 0.2), 0.1);
     dist = max(dist, -origin_box(p, vec3(3, 8, 1), 0.01));
     dist = min(dist, door_moldings(p, 3, 8));
     dist = min(dist, door_moldings(p, 5.2, 9.8));
